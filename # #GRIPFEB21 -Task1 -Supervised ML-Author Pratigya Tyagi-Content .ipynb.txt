@@ -1,0 +1,100 @@
+# Task 1 :Prediction using Supervised ML
+
+Author:PRATIGYA TYAGI 
+Data Science and Business Analytics Intern at The Sparks Foundation 
+To predict the scores of a student based on the number of study hours using Supervised ML
+
+# Importing all the required libraries 
+import pandas as pd 
+import numpy as np 
+import seaborn as sns 
+import matplotlib.pyplot as plt 
+
+# Read dataset from the given url
+df=pd.read_csv("http://bit.ly/w-data")
+
+df.head()#(Displays the first five records in the dataset)
+
+df.shape  #stores number of rows and columns as tuples
+
+df.info() # provides a brief summary of a dataframe 
+
+df.describe()  #Shows Basic Statistical details
+
+#Check for null values 
+df.isnull().sum()
+
+#Plotting the dataset(Since both variables are continuous ,plotting the scatter plot )
+df.plot
+df.plot(kind='scatter',x='Hours',y='Scores',style='o')
+plt.title('Hours vs Percentage')
+plt.xlabel('Hours studied')
+plt.ylabel('Scores Obtained')
+plt.show()
+
+#The scatter plot indicates positive relationship between Hours contributed and Scores of Students 
+
+df.corr() #Provides the degree of correlation between the two variables
+# Hours studied and Student scores are positively correlated and the degree of correlation is  97.6% 
+#Dividing the data into independent and dependent variables
+x = df.iloc[:, :-1].values #independent variable  
+y = df.iloc[:, 1].values #dependent variable
+
+from sklearn.model_selection import train_test_split    
+x_train, x_test, y_train, y_test = train_test_split(x, y,test_size=0.2, random_state=0)
+
+#Training the algorithm 
+from sklearn.linear_model import LinearRegression 
+lm=LinearRegression()
+#Fitting the model
+model=lm.fit(x_train,y_train) 
+
+#Plotting Regression line 
+line = model.coef_*x+model.intercept_
+#Plotting the test data 
+plt.scatter(x,y)
+plt.plot(x,line)
+plt.title('Predicting Hours_Studied Vs Percentage_Scores')
+plt.xlabel('Number_of_Hours_Studies')
+plt.ylabel('Percentage_Scores')
+plt.show
+
+# Obtain the intercept and coefficent of the regression line 
+print('Intercep:',model.intercept_)
+print('Coefficent:',model.coef_)
+
+#coefficents show that if the student study for one more hour their scores can increase by 9.9%
+
+# Predicitng the scores 
+y_pred = lm.predict(x_test)
+print(y_pred)
+
+# Compare Actual Vs Predicted Score 
+
+df_compare=pd.DataFrame({"Actual Score":[y_test],"Predicted Score ":[y_pred]})
+df_compare
+
+# Predicted Score if a student studies for 9.25 hrs/day 
+
+x_new=[[9.25]]
+y_predict=model.predict(x_new)
+y_predict
+print("The predicted score of a student if he studies for 9.25 hours is",y_predict[0])
+
+# Evaluating the model 
+import sklearn.metrics as metrics 
+exp_var=metrics.explained_variance_score(y_test, y_pred)
+mae=metrics.mean_absolute_error(y_test, y_pred) 
+mse=metrics.mean_squared_error(y_test, y_pred) 
+R2=metrics.r2_score(y_test, y_pred)
+
+print('Explained Variance: ', round(exp_var,4))    
+print('R2: ', round(R2,4))
+print('MAE: ', round(mae,4))
+print('MSE: ', round(mse,4))
+print('RMSE: ', round(np.sqrt(mse),4))
+
+
+
+
+
