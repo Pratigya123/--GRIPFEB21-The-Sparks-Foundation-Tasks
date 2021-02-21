@@ -1,0 +1,66 @@
+# Task 2-Prediction Using Unsupervised ML
+
+Author:PRATIGYA TYAGI Data Science and Business Analytics Intern at The Sparks Foundation 
+To predict the optimum number of clusters using Unsupervised ML
+
+# Import the required libraries 
+import pandas as pd 
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns 
+%matplotlib inline 
+from sklearn import datasets 
+from sklearn.cluster import KMeans
+
+df=pd.read_csv('C:\\Users\\pratigya\\Desktop\\Iris.csv')
+df.head() #Display the first five rows of the dataset 
+
+df.drop("Id",axis=1,inplace=True)  #Dropping the Id column 
+df.head()
+df.info() # this provides a concise summary of the Dataframe 
+df.shape #returns the dimensions of the dataframe 
+df.describe()  # used ot view basic statistical details 
+df.isnull().sum() #to check for null values in the dataset 
+df['Species'].unique()
+
+#Before doing clustering using KMeans,we need to specify the optimum number of clusters . 
+# For specifying the optimum number of clusters we are using the Elbow method .
+#The Elbow Method-in this the number of clusters will vary within a range .For each member WSS or within -cluster 
+sum of square is calculated .
+#These are then plotted against the range of clusters .The location of the elbow or the bend will determine the 
+optimal number of clusters
+
+#Calculating the within cluster sum of squares 
+x = df.iloc[:, [0, 1, 2, 3]].values
+WCSS=[]
+for i in range (1,11):
+    km=KMeans(n_clusters = i)
+    km.fit(x)
+    WCSS.append(km.inertia_)
+
+# Plotting the Elbow Curve -i.e the "Within -Cluster sum of squares "against the number of clusters
+plt.plot(range(1, 11), WCSS,color='green')
+plt.title('Elbow Curve ')
+plt.xlabel('Number of clusters')
+plt.ylabel('Within Cluster Sum of Squares') # Within cluster sum of squares
+plt.show()
+
+#To determine the optimal number of clusters, we have to select the value of k at the “elbow” ie the point after which the
+#rate of decrease in WCSS is minimal. Thus for the given data,we conclude that the optimal number of clusters for the data is 3.
+#So k=3 is the optimum number of clusters 
+
+#Applying k-means to dataset 
+model=KMeans(n_clusters=3,init='k-means++',max_iter=300,n_init=10,random_state=0)
+model1=model.fit_predict(x)
+model1
+
+#Visualizing the clusters 
+plt.scatter (x[model1==0,0],x[model1==0,1],s=100,c='red',label='Iris-setosa')
+plt.scatter (x[model1==1,0],x[model1==1,1],s=100,c='blue',label='Iris-versicolor')
+plt.scatter (x[model1==2,0],x[model1==2,1],s=100,c='red',label='Iris-virginica')
+
+#Plotting the cluster centers 
+plt.scatter(model.cluster_centers_[:,0],model.cluster_centers_[:,1],s=100,c='yellow',label='centroids')
+plt.legend()
+plt.grid()
+plt.show()    
