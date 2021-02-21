@@ -1,0 +1,79 @@
+# Task 6 -Prediction Using Decison Tree algorithm
+
+Author:PRATIGYA TYAGI Data Science and Business Analytics Intern at The Sparks Foundation 
+Dataset Used -IRIS Dataset 
+Language-Python 
+To use Decsion Tree algorithm for classifying and predicting the Flower Species in the IRIS Dataset 
+
+#Import the required libraries 
+import numpy as np
+import pandas as pd 
+import sklearn.datasets as load_iris
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+%matplotlib inline 
+from sklearn.model_selection import train_test_split
+from sklearn import tree
+from sklearn.tree import DecisionTreeClassifier 
+from sklearn.metrics import accuracy_score ,confusion_matrix
+
+#Load the required Dataset
+df=pd.read_csv('Iris.csv')
+
+df=df.drop(columns =['Id'])
+df.head()
+
+df.info()
+df.describe()
+df.isnull().sum()
+#Data Visualisation
+#A.PAIRPLOT
+sns.pairplot(df,hue='Species')
+#(B)COUNTPLOT
+sns.countplot(df['Species'])
+#(C(i))BARPLOT
+sns.barplot(y=df["SepalWidthCm"],x=df["Species"])
+#(C(ii))BARPLOT
+sns.barplot(y=df["SepalLengthCm"],x=df["Species"])
+#(C(iii))BARPLOT
+sns.barplot(y=df["PetalWidthCm"],x=df["Species"])
+#(C(iv))BARPLOT
+sns.barplot(y=df["PetalLengthCm"],x=df["Species"])
+#(D).BOXPLOT
+df.boxplot(by="Species", figsize=(12, 6))
+#(E)HISTOGRAM
+df.drop('Species',axis=1).hist(edgecolor='black', linewidth=1.2)
+fig=plt.gcf()
+fig.set_size_inches(12,6)
+plt.show()
+df.corr()
+#Showing correlation between variables 
+corr=df.corr()
+sns.heatmap(corr,annot=True)
+plt.show()
+#Seperating the variables 
+x=df.iloc[:,df.columns!='Species']
+y=df.iloc[:,df.columns=='Species']
+x.head()
+y.head()
+#Splitting the data into training set and test set 
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.30,random_state=0)
+#Fitting the model and predicting the result 
+#Create Decision tree Classifier 
+dtree=DecisionTreeClassifier()
+#Train Decision Tree Classifier 
+dtree.fit(x_train,y_train)
+#Predict the response for test dataset 
+y_pred=dtree.predict(x_test)
+y_pred
+#Evaluate Accuracy 
+accuracy=accuracy_score(y_test,y_pred)
+print('Accuracy score:',accuracy)
+# Constructing the Confusion Matrix
+cm=confusion_matrix(y_test,y_pred)
+cm
+#Visualising the Decision Tree
+
+fig = plt.figure(figsize=(25,20))
+tree.plot_tree(dtree,feature_names=df.columns,filled=True)
+plt.show()
